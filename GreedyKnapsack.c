@@ -4,12 +4,8 @@
 void knapsack(int n, float weight[], float profit[], float capacity)
 {
     float x[20], tp = 0; // x[] stores the fractions of items in the knapsack
-    int i, j, u;         // u stores the remaining capacity of the knapsack
-    u = capacity;
-
-    // Initialize all elements of x[] to 0 (no items are in the knapsack initially)
-    for (i = 0; i < n; i++)
-        x[i] = 0.0;
+    int i;
+    float u = capacity; // u stores the remaining capacity of the knapsack
 
     // Greedy approach: Add items until the knapsack is full
     for (i = 0; i < n; i++)
@@ -32,8 +28,8 @@ void knapsack(int n, float weight[], float profit[], float capacity)
 
     // Display the result
     printf("\nThe result vector is: ");
-    for (i = 0; i < n; i++)
-        printf("%f\t", x[i]); // Display the fractions of each item in the knapsack
+    for (int k = 0; k < n; k++)
+        printf("%f\t", x[k]); // Display the fractions of each item in the knapsack
 
     printf("\nMaximum profit is: %f", tp); // Display the total profit
 }
@@ -41,8 +37,8 @@ void knapsack(int n, float weight[], float profit[], float capacity)
 int main()
 {
     float weight[20], profit[20], capacity;
-    int num, i, j;
-    float ratio[20], temp;
+    int num, i;
+    float temp;
 
     // Input the number of items
     printf("\nEnter the number of objects: ");
@@ -59,30 +55,22 @@ int main()
     printf("\nEnter the capacity of the knapsack: ");
     scanf("%f", &capacity);
 
-    // Calculate the value-to-weight ratio for each item
-    for (i = 0; i < num; i++)
-    {
-        ratio[i] = profit[i] / weight[i];
-    }
-
     // Sort items in descending order of their value-to-weight ratio
     for (i = 0; i < num; i++)
     {
-        for (j = i + 1; j < num; j++)
+        for (int j = i + 1; j < num; j++)
         {
-            if (ratio[i] < ratio[j])
+            if (profit[i] / weight[i] < profit[j] / weight[j])
             {
-                temp = ratio[j];
-                ratio[j] = ratio[i];
-                ratio[i] = temp;
-
-                temp = weight[j];
-                weight[j] = weight[i];
-                weight[i] = temp;
-
+                // Swap profit[i] with profit[j]
                 temp = profit[j];
                 profit[j] = profit[i];
                 profit[i] = temp;
+
+                // Swap weight[i] with weight[j]
+                temp = weight[j];
+                weight[j] = weight[i];
+                weight[i] = temp;
             }
         }
     }

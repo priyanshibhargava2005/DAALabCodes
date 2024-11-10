@@ -1,9 +1,3 @@
-// Overall Time Complexity :
-// Building the min-heap : O(n)
-// Merging the files : O(n log n)
-// Overall time complexity is O(n log n).
-// space complexity of this algorithm is O(n), where n is the number of files bcoz we store the array of file sizes and use extra space for the heap (which is the same array).
-// Greedy approach with min-heap (priority queue)
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -12,35 +6,25 @@ using namespace std;
 
 int optimalMerge(vector<int> &files)
 {
+    // Initialize min-heap priority queue with file sizes
     priority_queue<int, vector<int>, greater<int>> minHeap(files.begin(), files.end());
     int totalCost = 0;
-    int iteration = 1;
 
+    // Merge files until only one merged file remains
     while (minHeap.size() > 1)
     {
+        // Extract two smallest elements
         int first_smallest = minHeap.top();
         minHeap.pop();
         int second_smallest = minHeap.top();
         minHeap.pop();
 
+        // Calculate merge cost and add to total cost
         int merge_cost = first_smallest + second_smallest;
         totalCost += merge_cost;
 
+        // Insert the merged file size back into the heap
         minHeap.push(merge_cost);
-
-        cout << "Iteration " << iteration++ << ":\n";
-        cout << "  Merging files of size " << first_smallest << " and " << second_smallest
-             << " -> Cost: " << merge_cost << endl;
-        cout << "  Current total cost: " << totalCost << endl;
-
-        priority_queue<int, vector<int>, greater<int>> tempHeap = minHeap;
-        cout << "  Heap state: ";
-        while (!tempHeap.empty())
-        {
-            cout << tempHeap.top() << " ";
-            tempHeap.pop();
-        }
-        cout << "\n\n";
     }
 
     return totalCost;
@@ -59,8 +43,7 @@ int main()
     }
 
     vector<int> files(n);
-
-    cout << "Enter the sizes of the " << n << " files separated by spaces:\n";
+    cout << "Enter the sizes of the files:\n";
     for (int i = 0; i < n; ++i)
     {
         cin >> files[i];

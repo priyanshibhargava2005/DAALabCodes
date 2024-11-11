@@ -1,92 +1,104 @@
-// Library to access INT_MAX variable
+#include <stdio.h>
 #include <limits.h>
 
-// Library to create set
-#include <stdbool.h>
-#include <stdio.h>
+#define MAX_VERTICES 100
 
-#define Vertices 5
-
-// A utility function for finding the vertex with the lowest key value
-// from a set of vertices that isn't included in MST.
-int Least_Key(int key[], bool Min_Span_Tree[])
+// Function to find the vertex with the minimum key value
+int minKey(int key[], int sptSet[], int vertices)
 {
-    int least = INT_MAX, min_index;
+    int min = INT_MAX, minIndex;
 
-    for (int v = 0; v < Vertices; v++)
+    for (int v = 0; v < vertices; v++)
     {
-        if (Min_Span_Tree[v] == false && key[v] < least)
+        if (!sptSet[v] && key[v] < min) // Find the minimum key not yet included in MST
         {
-            least = key[v];
-            min_index = v;
+            min = key[v];
+            minIndex = v;
         }
     }
 
-    return min_index;
+    return minIndex;
 }
 
-// Function to print created MST
-int print_Prims_MST(int parent[], int graph[Vertices][Vertices])
+// Function to print the Minimum Spanning Tree
+void printMST(int parent[], int graph[MAX_VERTICES][MAX_VERTICES], int vertices)
 {
     printf("Edge \tWeight\n");
-    for (int i = 1; i < Vertices; i++)
+    for (int i = 1; i < vertices; i++)
     {
         printf("%d - %d \t%d \n", parent[i], i, graph[i][parent[i]]);
     }
 }
 
-// Function to generate MST
-void prims_MST(int graph[Vertices][Vertices])
+// Function to implement Prim's algorithm for a given graph
+void primMST(int graph[MAX_VERTICES][MAX_VERTICES], int vertices)
 {
-    int parent[Vertices];
-    int key[Vertices];
-    bool Min_Span_Tree[Vertices];
+    int key[MAX_VERTICES];    // Array to store the minimum edge weight to connect to MST
+    int parent[MAX_VERTICES]; // Array to store the MST structure
+    int sptSet[MAX_VERTICES]; // Similar to Dijkstra's, but here it means MST inclusion set
 
-    // Initialize all keys as INFINITY and MST[] as false
-    for (int i = 0; i < Vertices; i++)
+    // Initialize all keys as INFINITE and sptSet[] as false
+    for (int i = 0; i < vertices; i++)
     {
-        key[i] = INT_MAX;
-        Min_Span_Tree[i] = false;
+        key[i] = INT_MAX; // Initialize all keys to "infinity" (no connection)
+        sptSet[i] = 0;    // Mark all vertices as not included in MST
     }
 
-    key[0] = 0;     // First vertex is always the root of MST
-    parent[0] = -1; // First node has no parent
+    // Start MST from the first vertex
+    key[0] = 0;     // Root vertex has key value 0
+    parent[0] = -1; // First node has no parent (starting point of MST)
 
-    // The MST will have Vertices - 1 edges
-    for (int count = 0; count < Vertices - 1; count++)
+    // MST will have `vertices - 1` edges
+    for (int count = 0; count < vertices - 1; count++)
     {
-        // Pick the minimum key vertex from the set of vertices not yet processed
-        int u = Least_Key(key, Min_Span_Tree);
-        Min_Span_Tree[u] = true;
+        // Pick the minimum key vertex not yet included in MST
+        int u = minKey(key, sptSet, vertices);
+        sptSet[u] = 1; // Mark the picked vertex as included in MST
 
-        // Update the key and parent for the adjacent vertices of the picked vertex
-        for (int v = 0; v < Vertices; v++)
+        // Update key and parent for adjacent vertices of the picked vertex
+        for (int v = 0; v < vertices; v++)
         {
-            if (graph[u][v] && Min_Span_Tree[v] == false && graph[u][v] < key[v])
+            // Update key[v] if there's a smaller edge weight and v is not yet in MST
+            if (graph[u][v] && !sptSet[v] && graph[u][v] < key[v])
             {
-                parent[v] = u;
-                key[v] = graph[u][v];
+                parent[v] = u;        // Store u as parent of v
+                key[v] = graph[u][v]; // Update key[v] to the weight of edge u-v
             }
         }
     }
 
-    // Print the created MST
-    printf("Created Spanning Tree for Given Graph is: \n\n");
-    print_Prims_MST(parent, graph);
+    // Print the constructed MST
+    printMST(parent, graph, vertices);
 }
 
 int main()
 {
-    // Input graph (Adjacency matrix representation)
-    int graph[Vertices][Vertices] = {
-        {0, 3, 0, 6, 0},
-        {3, 0, 4, 8, 5},
-        {0, 4, 0, 0, 7},
-        {6, 8, 0, 0, 11},
-        {0, 5, 7, 11, 0}};
+    int vertices;
 
-    // Generate and print the Minimum Spanning Tree (MST)
-    prims_MST(graph);
+    // Input the number of vertices
+    printf("Input the number of vertices: ");
+    scanf("%d", &vertices);
+
+    if (vertices <= 0 || vertices > MAX_VERTICES)
+    {
+        printf("Invalid number of vertices. Exiting...\n");
+        return 1;
+    }
+
+    int graph[MAX_VERTICES][MAX_VERTICES];
+
+    // Input the adjacency matrix representing the weighted graph
+    printf("Input the adjacency matrix for the graph (use 0 for no connection):\n");
+    for (int i = 0; i < vertices; i++)
+    {
+        for (int j = 0; j < vertices; j++)
+        {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    // Run Prim's algorithm to find MST
+    primMST(graph, vertices);
 
     return 0;
 }
